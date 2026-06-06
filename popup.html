@@ -1,0 +1,363 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #faf9f6;         /* Soft warm cream background */
+      --bg-card: #ffffff;         /* Pure white cards */
+      --text-main: #0f172a;       /* Slate dark text */
+      --text-muted: #64748b;      /* Slate grey text */
+      --accent: #059669;          /* Premium emerald green */
+      --accent-hover: #047857;
+      --border-color: #e2e8f0;    /* Soft borders */
+      --font-ui: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+    }
+
+    body {
+      width: 340px;
+      font-family: var(--font-ui);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      margin: 0;
+      padding: 14px;
+      box-sizing: border-box;
+    }
+
+    /* Header Styling */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    /* Switch Toggle */
+    .switch-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .25s ease-in-out;
+      border-radius: 22px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s ease-in-out;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Tabs Navigation */
+    .tabs {
+      display: flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 6px 0;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Tab Content Pane */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Form Fields */
+    .field-group {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="number"],
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background-color: #fafafa;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    select:focus,
+    input[type="number"]:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+    }
+
+    textarea {
+      height: 72px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      resize: none;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 4px 0 0 0;
+      line-height: 1.35;
+    }
+
+    /* Debug Logs Area */
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .clear-logs-btn {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .clear-logs-btn:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
+    #logArea {
+      height: 110px;
+      overflow-y: auto;
+      background: #0f172a;      /* Dark terminal look for log area */
+      color: #38bdf8;           /* Light blue text for high legibility */
+      border: 1px solid #1e293b;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      box-sizing: border-box;
+      line-height: 1.4;
+    }
+
+    /* Action Buttons & Warns */
+    .save-btn {
+      width: 100%;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+    }
+
+    .save-btn:hover {
+      background-color: var(--accent-hover);
+      box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+    }
+
+    .save-btn:active {
+      transform: translateY(1px);
+    }
+
+    .warn {
+      color: #991b1b;
+      background-color: #fef2f2;
+      border: 1px solid #fca5a5;
+      font-size: 11px;
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h3 class="header-title">MCP Auto-Allow</h3>
+      <div class="header-subtitle">Auto accept safe tool commands</div>
+    </div>
+    <div class="switch-wrapper">
+      <label class="switch">
+        <input type="checkbox" id="enabled">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-ctrl" data-target="pane-ctrl">Bảng điều khiển</button>
+    <button class="tab-btn" id="tab-rules" data-target="pane-rules">Cấu hình luật</button>
+  </div>
+
+  <!-- Tab Content 1: Control Panel -->
+  <div class="tab-pane active" id="pane-ctrl">
+    <div class="field-group">
+      <label for="mode">Chế độ hoạt động</label>
+      <select id="mode">
+        <option value="manual">Tắt - accept thủ công</option>
+        <option value="partial">Accept 1 phần - chỉ lệnh an toàn</option>
+        <option value="auto">Auto accept - theo whitelist</option>
+      </select>
+      <div class="hint">
+        <b>Partial</b>: Chỉ tự chạy lệnh an toàn. <b>Auto</b>: Chạy lệnh Whitelist trừ các lệnh cấm.
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label for="delayMs">Delay trước khi click (ms)</label>
+      <input type="number" id="delayMs" min="300" step="100">
+      <div class="hint">Khoảng thời gian chờ trước khi click tự động.</div>
+    </div>
+
+    <div class="field-group" style="padding-bottom: 12px;">
+      <div class="log-header">
+        <label style="margin: 0;">Lịch sử hoạt động (Logs)</label>
+        <span class="clear-logs-btn" id="clearLogs">Xóa log</span>
+      </div>
+      <div id="logArea">No logs yet.</div>
+    </div>
+  </div>
+
+  <!-- Tab Content 2: Rules Config -->
+  <div class="tab-pane" id="pane-rules">
+    <div class="field-group">
+      <label for="allowTools">Allow Tools Whitelist</label>
+      <textarea id="allowTools" placeholder="Mỗi dòng một tool ID, hoặc *"></textarea>
+      <div class="hint">Chỉ tự đồng ý các MCP tools nằm trong danh sách này.</div>
+    </div>
+
+    <div class="field-group">
+      <label for="allowPhrases">Allow Phrases Whitelist</label>
+      <textarea id="allowPhrases" placeholder="Mỗi dòng một cụm từ, hoặc *"></textarea>
+      <div class="hint">Các cụm từ xuất hiện trong prompt để xác nhận tool.</div>
+    </div>
+
+    <div class="field-group">
+      <label for="allowCommandRegex">Partial Mode - Safe Command Regex</label>
+      <textarea id="allowCommandRegex" placeholder="Mỗi dòng một regex"></textarea>
+      <div class="hint">Chế độ Partial chỉ đồng ý các lệnh khớp với regex an toàn ở đây.</div>
+    </div>
+
+    <div class="field-group">
+      <label for="denyRegex">Deny Command Regex (Blacklist)</label>
+      <textarea id="denyRegex" placeholder="Mỗi dòng một regex chặn"></textarea>
+      <div class="hint">Chặn các lệnh này. Bộ chặn cứng (rm, sudo, v.v...) luôn luôn chặn.</div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <button class="save-btn" id="save">Save</button>
+
+  <div class="warn">
+    <b>Chú ý:</b> Lệnh nguy hiểm (rm, sudo, curl, wget, ssh, key/token...) luôn bị chặn cứng bất kể chế độ nào.
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
