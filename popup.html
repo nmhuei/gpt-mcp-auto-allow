@@ -347,16 +347,12 @@
     <div class="field-group">
       <label for="denyRegex">Deny Command Regex (Blacklist)</label>
       <textarea id="denyRegex" placeholder="Mỗi dòng một regex chặn"></textarea>
-      <div class="hint">Chặn các lệnh này. Bộ chặn cứng (rm, sudo, v.v...) luôn luôn chặn.</div>
+      <div class="hint">Chặn các lệnh này bằng biểu thức chính quy (regex).</div>
     </div>
   </div>
 
   <!-- Action Buttons -->
   <button class="save-btn" id="save">Save</button>
-
-  <div class="warn">
-    <b>Chú ý:</b> Lệnh nguy hiểm (rm, sudo, curl, wget, ssh, key/token...) luôn bị chặn cứng bất kể chế độ nào.
-  </div>
 
   <script src="popup.js"></script>
 </body>
