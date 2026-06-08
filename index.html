@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Trang giới thiệu MCP Auto-Allow với phong cách Anime Sakura quyến rũ. Trải nghiệm tự động hóa MCP thông minh và an toàn trên ChatGPT & Claude.">
+  <title>MCP Auto-Allow - Sakura Edition</title>
+  <!-- Google Fonts: Outfit for general text, Playfair Display for elegant headings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,600;0,800;1,500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-sakura: #FFB7C5;
+      --accent-rose: #FF6F91;
+      --bg-cream: #FFF5F6;
+      --bg-glass: rgba(255, 255, 255, 0.75);
+      --border-sakura: rgba(255, 183, 197, 0.4);
+      --text-main: #2C3E50;
+      --text-muted: #5D6D7E;
+      --gold: #D4AF37;
+      --gold-glow: rgba(212, 175, 55, 0.3);
+      --shadow-sakura: 0 8px 32px 0 rgba(255, 111, 145, 0.12);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Sakura Falling Canvas */
+    #sakura-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Global Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Navbar styling with Glassmorphism */
+    header {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-sakura);
+      border-radius: 50px;
+      z-index: 100;
+      box-shadow: var(--shadow-sakura);
+      transition: var(--transition);
+    }
+
+    .nav-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 32px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--accent-rose);
+      text-decoration: none;
+    }
+
+    .logo svg {
+      fill: var(--accent-rose);
+      animation: rotateSakura 10s linear infinite;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-rose);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent-rose);
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .btn-cta {
+      background: linear-gradient(135deg, var(--primary-sakura), var(--accent-rose));
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 111, 145, 0.3);
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 111, 145, 0.5);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 180px 0 100px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: radial-gradient(circle at 80% 20%, rgba(255, 183, 197, 0.25) 0%, transparent 60%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.15;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: var(--text-main);
+    }
+
+    .hero-content h1 span {
+      color: var(--accent-rose);
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero-content h1 span::after {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 183, 197, 0.4);
+      z-index: -1;
+      border-radius: 4px;
+    }
+
+    .hero-content p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      max-width: 540px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-secondary {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-sakura);
+      color: var(--text-main);
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+      background: #fff;
+      border-color: var(--accent-rose);
+    }
+
+    /* Simulator Styling */
+    .simulator-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-sakura);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow-sakura);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .simulator-card::before {
+      content: '🌸 MÔ PHỎNG TRỰC QUAN';
+      position: absolute;
+      top: 12px;
+      right: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-rose);
+      letter-spacing: 0.05em;
+    }
+
+    .chatgpt-box {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid var(--border-sakura);
+      padding: 20px;
+      margin-top: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .box-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mcp-command-desc {
+      background: #F8F9F9;
+      border-left: 3px solid var(--accent-rose);
+      padding: 12px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar-container {
+      height: 6px;
+      background: #EBEDEF;
+      border-radius: 3px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary-sakura), var(--accent-rose));
+      transition: width 0.05s linear;
+    }
+
+    .countdown-status {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .timer-text {
+      color: var(--accent-rose);
+      font-weight: 700;
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-dialog {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .btn-dialog.cancel {
+      background: #F2F4F4;
+      color: var(--text-main);
+    }
+
+    .btn-dialog.allow {
+      background: linear-gradient(135deg, var(--primary-sakura), var(--accent-rose));
+      color: white;
+      position: relative;
+    }
+
+    .btn-dialog.allow.active::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      animation: pulseGold 1s infinite alternate;
+    }
+
+    .sim-logs {
+      margin-top: 20px;
+      background: #2D3E50;
+      color: #EAEDED;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      height: 185px;
+      overflow-y: auto;
+    }
+
+    .btn-replay {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--accent-rose);
+      color: var(--accent-rose);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-left: auto;
+    }
+
+    .btn-replay:hover {
+      background: var(--accent-rose);
+      color: #fff;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 100px 0;
+      background: #fff;
+      position: relative;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+    }
+
+    .feature-card {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-sakura);
+      border-radius: 20px;
+      padding: 32px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-sakura);
+      border-color: var(--accent-rose);
+    }
+
+    .icon-container {
+      width: 50px;
+      height: 50px;
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 10px rgba(255, 111, 145, 0.1);
+      color: var(--accent-rose);
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Footer styling */
+    footer {
+      background: var(--bg-cream);
+      padding: 60px 0 30px;
+      border-top: 1px solid var(--border-sakura);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-rose);
+      text-decoration: none;
+    }
+
+    .copyright {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Animations */
+    @keyframes rotateSakura {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseGold {
+      from {
+        box-shadow: 0 0 4px var(--gold-glow);
+      }
+      to {
+        box-shadow: 0 0 16px rgba(212, 175, 55, 0.7);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 991px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 50px;
+        text-align: center;
+      }
+
+      .hero-content p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+      
+      .nav-links {
+        display: none; /* simple hidden for focus on demo */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Sakura Leaves -->
+  <canvas id="sakura-canvas"></canvas>
+
+  <!-- Navbar -->
+  <header>
+    <div class="nav-wrap container">
+      <a href="#" class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <!-- Stylized Sakura petal vector -->
+          <path d="M12 2C11.5 5 9 8.5 6 11c-2.5 2-4 4.5-4 7s2 4.5 4.5 4.5c3.5 0 6-3.5 7.5-6.5 1.5 3 4 6.5 7.5 6.5 2.5 0 4.5-2 4.5-4.5s-1.5-5-4-7c-3-2.5-5.5-6-6-9z" />
+        </svg>
+        <span>MCP Auto-Allow</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Tính năng</a></li>
+        <li><a href="#demo">Mô phỏng</a></li>
+        <li><a href="#docs">Tài liệu</a></li>
+      </ul>
+      <a href="#" class="btn-cta">Cài đặt ngay</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <h1>Bấm "Cho phép"<br>Không còn là <span>Nỗi phiền toái.</span></h1>
+        <p>Extension tối giản giúp tự động hóa quá trình phê duyệt công cụ MCP của ChatGPT & Claude. Thiết kế thanh lịch, bảo mật tối đa và đậm chất nghệ thuật Sakura.</p>
+        <div class="hero-actions">
+          <a href="#" class="btn-cta">Tải cho Chrome</a>
+          <a href="#features" class="btn-secondary">Tìm hiểu thêm</a>
+        </div>
+      </div>
+
+      <!-- Live Simulator -->
+      <div class="simulator-card" id="demo">
+        <div class="chatgpt-box">
+          <div class="box-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--accent-rose)">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M21 12H3" />
+            </svg>
+            <span>Máy chủ MCP muốn truy cập</span>
+          </div>
+          <div class="mcp-command-desc">
+            $ python3 scripts/build.py --prod
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="sim-progress"></div>
+          </div>
+          <div class="countdown-status">
+            <span>Đang tự động phê duyệt...</span>
+            <span class="timer-text" id="sim-timer">1.2s</span>
+          </div>
+          <div class="actions-row">
+            <button class="btn-dialog cancel">Từ chối</button>
+            <button class="btn-dialog allow" id="sim-btn">Cho phép</button>
+          </div>
+        </div>
+        
+        <!-- Live Console Logs Simulation -->
+        <div class="sim-logs" id="sim-log">
+          [Hệ thống] Hộp thoại MCP xuất hiện. Đang quét quy tắc...
+        </div>
+        
+        <button class="btn-replay" onclick="startSimulation()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+          </svg>
+          Chạy lại mô phỏng
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-title">
+        <h2>Nhẹ nhàng & Tinh tế như Cánh hoa anh đào</h2>
+        <p>Quên đi việc phải liên tục nhấp chuột để đồng ý chạy các công cụ MCP. Hãy để chúng tôi lo liệu việc đó theo quy tắc của bạn.</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="icon-container">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <h3>Auto-click thông minh</h3>
+          <p>Nhận diện chính xác và tự động bấm nút "Cho phép" trong các hộp thoại xác nhận MCP thông qua cơ chế phân tích DOM đa lớp.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="icon-container">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <h3>Bộ lọc Regex cá nhân</h3>
+          <p>Tạo danh sách trắng (Whitelist) hoặc danh sách đen (Blacklist) để chỉ tự động cho phép những công cụ an toàn thực sự.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="icon-container">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+          </div>
+          <h3>Lịch sử hoạt động</h3>
+          <p>Popup tích hợp trình hiển thị nhật ký chẩn đoán thời gian thực, giúp bạn theo dõi từng hành động phê duyệt trực quan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-wrap">
+        <a href="#" class="footer-logo">
+          🌸 MCP Auto-Allow
+        </a>
+        <div style="display:flex; gap: 20px;">
+          <a href="#" style="color:var(--text-muted); text-decoration:none;">GitHub</a>
+          <a href="#" style="color:var(--text-muted); text-decoration:none;">Bảo mật</a>
+        </div>
+      </div>
+      <p class="copyright">&copy; 2026 MCP Auto-Allow Sakura. Bản quyền giao diện thuộc phong cách thiết kế uupm.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Sakura particle system
+    const canvas = document.getElementById('sakura-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const petals = [];
+    const petalCount = 40;
+
+    class Petal {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * height; // start distributed
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = -20;
+        this.size = Math.random() * 8 + 8;
+        this.speedX = Math.random() * 1.5 - 0.5;
+        this.speedY = Math.random() * 1.5 + 1;
+        this.angle = Math.random() * Math.PI * 2;
+        this.angleSpeed = Math.random() * 0.02 - 0.01;
+        this.opacity = Math.random() * 0.4 + 0.4;
+      }
+      update() {
+        this.x += this.speedX + Math.sin(this.angle) * 0.5;
+        this.y += this.speedY;
+        this.angle += this.angleSpeed;
+        if (this.y > height + 20 || this.x < -20 || this.x > width + 20) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.beginPath();
+        // Drawing cherry blossom petal shape using bezier curves
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, this.size/3, 0, this.size);
+        ctx.bezierCurveTo(this.size, this.size/3, this.size/2, -this.size/2, 0, 0);
+        ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`; // Soft Pink
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < petalCount; i++) {
+      petals.push(new Petal());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      petals.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Simulation code
+    let simInterval;
+    function startSimulation() {
+      const timerEl = document.getElementById('sim-timer');
+      const btnEl = document.getElementById('sim-btn');
+      const progressEl = document.getElementById('sim-progress');
+      const logEl = document.getElementById('sim-log');
+      
+      // Reset simulator states
+      btnEl.classList.remove('active');
+      btnEl.style.boxShadow = 'none';
+      progressEl.style.width = '0%';
+      timerEl.textContent = '1.2s';
+      logEl.innerHTML = `<span style="color:#AEB6BF">[Hệ thống] Hộp thoại MCP xuất hiện. Đang quét quy tắc...</span>`;
+      
+      let timePassed = 0;
+      const totalTime = 1200; // ms
+      const intervalTime = 50; // ms
+      
+      clearInterval(simInterval);
+      simInterval = setInterval(() => {
+        timePassed += intervalTime;
+        const progress = Math.min((timePassed / totalTime) * 100, 100);
+        progressEl.style.width = `${progress}%`;
+        
+        const remaining = Math.max((totalTime - timePassed) / 1000, 0);
+        timerEl.textContent = `${remaining.toFixed(1)}s`;
+        
+        if (timePassed >= totalTime) {
+          clearInterval(simInterval);
+          logEl.innerHTML += `<br><span style="color:#52BE80">[Quyết định] Cho phép tự động chạy (Quy tắc auto-allow)</span>`;
+          logEl.innerHTML += `<br><span style="color:#5DADE2">[Hành động] Đang tự động click "Cho phép"</span>`;
+          
+          setTimeout(() => {
+            btnEl.classList.add('active');
+            logEl.innerHTML += `<br><span style="color:#FFE4E1">✔ Đã tự động chấp nhận quyền truy cập MCP thành công!</span>`;
+            
+            // Auto scroll log to bottom
+            logEl.scrollTop = logEl.scrollHeight;
+          }, 200);
+        }
+      }, intervalTime);
+    }
+
+    // Start simulation initially
+    startSimulation();
+  </script>
+</body>
+</html>

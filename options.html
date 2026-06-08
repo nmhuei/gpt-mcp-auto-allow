@@ -1,0 +1,595 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Cấu hình nâng cao MCP Auto-Allow 🌸</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #FFF5F6;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --text-main: #2C3E50;
+      --text-muted: #5D6D7E;
+      --accent: #FF6F91;
+      --primary-sakura: #FFB7C5;
+      --border-color: rgba(255, 183, 197, 0.4);
+      --font-ui: 'Outfit', sans-serif;
+      --font-title: 'Playfair Display', serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-ui);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #sakura-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    /* Glass Header */
+    .header {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(255, 183, 197, 0.15);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-logo svg {
+      fill: var(--accent);
+      animation: spinSakura 15s linear infinite;
+    }
+
+    .header-title-wrap h1 {
+      margin: 0;
+      font-family: var(--font-title);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .header-title-wrap p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Main Container Split */
+    .container {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(255, 183, 197, 0.1);
+    }
+
+    .side-nav-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 12px 16px;
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: left;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .side-nav-btn:hover {
+      color: var(--accent);
+      background: rgba(255, 183, 197, 0.1);
+    }
+
+    .side-nav-btn.active {
+      color: var(--accent);
+      background: rgba(255, 183, 197, 0.18);
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    /* Main Form Area */
+    .main-content {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(255, 183, 197, 0.1);
+      min-height: 450px;
+    }
+
+    .content-pane {
+      display: none;
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .content-pane.active {
+      display: block;
+    }
+
+    .pane-title {
+      font-family: var(--font-title);
+      font-size: 20px;
+      margin: 0 0 20px 0;
+      color: var(--text-main);
+      border-bottom: 2px solid rgba(255, 183, 197, 0.2);
+      padding-bottom: 10px;
+    }
+
+    /* Input Styling */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      color: var(--text-main);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .form-group input[type="number"]:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.15);
+    }
+
+    .form-group textarea {
+      height: 120px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .form-group .hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* Switch Toggles */
+    .switch-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 183, 197, 0.1);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 183, 197, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .switch-label-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .switch-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .switch-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: var(--transition);
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: var(--transition);
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+      box-shadow: 0 0 10px rgba(255, 111, 145, 0.4);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* Action Buttons Row */
+    .actions-row {
+      margin-top: 32px;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      background: none;
+      border: none;
+      padding: 12px 24px;
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-sakura), var(--accent));
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 111, 145, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 111, 145, 0.4);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 183, 197, 0.08);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Backup Buttons panel */
+    .backup-panel {
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 10px;
+    }
+
+    /* Big Logs Terminal */
+    .log-terminal-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 380px;
+    }
+
+    .log-terminal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1C0F14;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(255, 183, 197, 0.15);
+    }
+
+    .log-terminal-header span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--primary-sakura);
+      font-weight: 500;
+    }
+
+    #logArea {
+      flex: 1;
+      background: #23131A;
+      color: #FFE4E1;
+      border: none;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 18px;
+      overflow-y: auto;
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    /* Status Notifications */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #2D3E50;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: none;
+      animation: slideUp 0.3s ease-out forwards;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+
+    @keyframes spinSakura {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="sakura-canvas"></canvas>
+
+  <div class="wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="header-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24">
+            <path d="M12 2C11.5 5 9 8.5 6 11c-2.5 2-4 4.5-4 7s2 4.5 4.5 4.5c3.5 0 6-3.5 7.5-6.5 1.5 3 4 6.5 7.5 6.5 2.5 0 4.5-2 4.5-4.5s-1.5-5-4-7c-3-2.5-5.5-6-6-9z" />
+          </svg>
+        </div>
+        <div class="header-title-wrap">
+          <h1>MCP Auto-Allow</h1>
+          <p>Cấu hình nâng cao & quản lý quy tắc phê duyệt tự động</p>
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-secondary" id="back-btn" style="padding: 8px 16px; font-size: 12.5px;">
+          ← Đóng
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Split -->
+    <div class="container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <button class="side-nav-btn active" data-pane="pane-general">
+          ⚙ Cấu hình chung
+        </button>
+        <button class="side-nav-btn" data-pane="pane-rules">
+          📋 Quy tắc Whitelist
+        </button>
+        <button class="side-nav-btn" data-pane="pane-security">
+          🛡 Bảo mật & Blacklist
+        </button>
+        <button class="side-nav-btn" data-pane="pane-logs">
+          📜 Nhật ký hoạt động
+        </button>
+        <button class="side-nav-btn" data-pane="pane-backup">
+          💾 Sao lưu & Đồng bộ
+        </button>
+      </aside>
+
+      <!-- Main Form Content -->
+      <main class="main-content">
+        <!-- Pane 1: General Settings -->
+        <div class="content-pane active" id="pane-general">
+          <h2 class="pane-title">Cấu hình chung</h2>
+          
+          <div class="switch-group">
+            <div class="switch-label-wrap">
+              <span class="switch-title">Kích hoạt Tự động click</span>
+              <span class="switch-desc">Bật hoặc tắt toàn bộ tính năng tự động phê duyệt của extension.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="enabled">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="mode">Chế độ hoạt động</label>
+            <select id="mode">
+              <option value="manual">Tắt - phê duyệt thủ công</option>
+              <option value="partial">Bán tự động - chỉ tự phê duyệt lệnh an toàn</option>
+              <option value="auto">Tự động hoàn toàn - theo whitelist</option>
+            </select>
+            <div class="hint">
+              <strong>Bán tự động</strong>: Chỉ phê duyệt khi lệnh console khớp với danh sách Regex an toàn.
+              <br><strong>Tự động</strong>: Tự động phê duyệt tất cả các Tool trong Whitelist và bỏ qua nếu nằm trong Blacklist.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="delayMs">Delay trước khi click tự động (ms)</label>
+            <input type="number" id="delayMs" min="300" step="100">
+            <div class="hint">Khoảng thời gian chờ trước khi nút "Cho phép" được click (tối thiểu 300ms).</div>
+          </div>
+        </div>
+
+        <!-- Pane 2: Whitelist Rules -->
+        <div class="content-pane" id="pane-rules">
+          <h2 class="pane-title">Quy tắc Whitelist</h2>
+
+          <div class="form-group">
+            <label for="allowTools">Whitelist Công cụ (Tools)</label>
+            <textarea id="allowTools" placeholder="Ví dụ:&#10;list_dir&#10;view_file&#10;* (tất cả các công cụ)"></textarea>
+            <div class="hint">Mỗi dòng một ID của công cụ MCP được phép chạy tự động. Nhập <code>*</code> để phê duyệt tất cả công cụ.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="allowPhrases">Whitelist Từ khóa (Phrases)</label>
+            <textarea id="allowPhrases" placeholder="Ví dụ:&#10;Safe to execute&#10;Approved by developer&#10;* (tất cả các prompt)"></textarea>
+            <div class="hint">Mỗi dòng một cụm từ. Nếu cụm từ xuất hiện trong mô tả yêu cầu phê duyệt, lệnh sẽ được tự động chấp thuận.</div>
+          </div>
+        </div>
+
+        <!-- Pane 3: Security & Blacklist Rules -->
+        <div class="content-pane" id="pane-security">
+          <h2 class="pane-title">Bảo mật & Blacklist</h2>
+
+          <div class="form-group">
+            <label for="allowCommandRegex">Bán tự động - Regex Lệnh an toàn</label>
+            <textarea id="allowCommandRegex" placeholder="Ví dụ:&#10;^npm run dev&#10;^git status&#10;^cargo check"></textarea>
+            <div class="hint">Ở chế độ Bán tự động, các lệnh console/terminal chuẩn bị chạy phải khớp với ít nhất một regex an toàn ở đây mới được phê duyệt.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="denyRegex">Blacklist lệnh cấm (Deny Command Regex)</label>
+            <textarea id="denyRegex" placeholder="Ví dụ:&#10;rm -rf&#10;mkfs&#10;shutdown&#10;curl.*\|.*sh"></textarea>
+            <div class="hint"><strong>Tuyệt đối chặn:</strong> Nếu lệnh chuẩn bị chạy khớp với bất kỳ regex nào ở đây, tiến trình tự phê duyệt sẽ dừng lại để bạn xác nhận thủ công.</div>
+          </div>
+        </div>
+
+        <!-- Pane 4: Logs Terminal -->
+        <div class="content-pane" id="pane-logs">
+          <h2 class="pane-title">Nhật ký hoạt động</h2>
+          <div class="log-terminal-wrap">
+            <div class="log-terminal-header">
+              <span>mcp-auto-allow-logger.log</span>
+              <button class="btn btn-secondary" id="clearLogs" style="padding: 4px 10px; font-size: 11px; border-radius: 4px;">
+                Xóa nhật ký
+              </button>
+            </div>
+            <div id="logArea">Chưa có bản ghi hoạt động nào được tạo.</div>
+          </div>
+        </div>
+
+        <!-- Pane 5: Import/Export Backup -->
+        <div class="content-pane" id="pane-backup">
+          <h2 class="pane-title">Sao lưu & Đồng bộ</h2>
+          <p class="hint" style="margin-bottom: 20px;">
+            Nhập hoặc xuất toàn bộ cấu hình quy tắc phê duyệt dưới dạng file định dạng JSON để sao lưu hoặc chuyển đổi thiết bị.
+          </p>
+          <div class="backup-panel">
+            <button class="btn btn-secondary" id="export-btn">
+              📥 Xuất cấu hình (JSON)
+            </button>
+            <button class="btn btn-secondary" id="import-trigger-btn">
+              📤 Nhập cấu hình
+            </button>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+          </div>
+        </div>
+
+        <!-- Bottom Action Row -->
+        <div class="actions-row">
+          <button class="btn btn-secondary" id="reset-btn">Khôi phục mặc định</button>
+          <button class="btn btn-primary" id="save">Lưu cấu hình</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Thông báo</div>
+
+  <script src="options.js"></script>
+</body>
+</html>

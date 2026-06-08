@@ -135,8 +135,9 @@ function getCandidateButtons() {
 
 function getPromptBoxFromButton(button) {
   let el = button;
+  const path = [];
 
-  for (let i = 0; i < 12 && el; i++) {
+  for (let i = 0; i < 20 && el; i++) {
     const text = normalizeText(el.textContent || el.innerText);
 
     const hasAllowButton =
@@ -150,13 +151,51 @@ function getPromptBoxFromButton(button) {
       text.includes("host machine") ||
       text.includes("Chạy lệnh shell") ||
       text.includes("máy chủ") ||
-      text.includes("không gian làm việc");
+      text.includes("không gian làm việc") ||
+      text.includes("công cụ") ||
+      text.includes("tool") ||
+      text.includes("kết nối") ||
+      text.includes("connect") ||
+      text.includes("yêu cầu") ||
+      text.includes("request") ||
+      text.includes("gọi") ||
+      text.includes("call") ||
+      text.includes("phê duyệt") ||
+      text.includes("approve");
 
-    if (text.length > 20 && text.length < 8000 && hasAllowButton && hasPromptHint) {
+    const isDialogElement =
+      el.getAttribute("role") === "dialog" ||
+      el.getAttribute("aria-modal") === "true" ||
+      (el.className && typeof el.className === "string" && (
+        el.className.includes("Dialog") ||
+        el.className.includes("Modal") ||
+        el.className.includes("dialog") ||
+        el.className.includes("modal")
+      ));
+
+    const matches = text.length > 20 && text.length < 30000 && hasAllowButton && (hasPromptHint || isDialogElement);
+
+    path.push({
+      tag: el.tagName,
+      className: typeof el.className === "string" ? el.className.substring(0, 100) : "",
+      role: el.getAttribute("role"),
+      textLen: text.length,
+      hasAllowButton,
+      hasPromptHint,
+      isDialogElement,
+      matches
+    });
+
+    if (matches) {
       return el;
     }
 
     el = el.parentElement;
+  }
+
+  if (!button.__mcp_diagnostic_logged) {
+    button.__mcp_diagnostic_logged = true;
+    logDebug(`[Diagnostic] Path for button: ` + JSON.stringify(path));
   }
 
   return null;
@@ -243,18 +282,24 @@ function classifyPrompt(text) {
 function scanAndClick() {
   const buttons = getCandidateButtons();
   
-  if (buttons.length > 0) {
-    logDebug(`[Scan] Found ${buttons.length} candidate button(s)`);
+  const unseenButtons = buttons.filter(btn => !btn.__mcp_seen);
+  if (unseenButtons.length > 0) {
+    unseenButtons.forEach(btn => {
+      btn.__mcp_seen = true;
+    });
+    logDebug(`[Scan] Found ${unseenButtons.length} new candidate button(s)`);
   }
 
   for (const button of buttons) {
     try {
       const btnText = normalizeText(button.textContent || button.innerText).trim();
-      logDebug(`[Scan] Processing candidate button: "${btnText}"`);
       
       const box = getPromptBoxFromButton(button);
       if (!box) {
-        logDebug(`[Scan] Button "${btnText}" found, but failed to find parent prompt box (Radix/Dialog container)`);
+        if (!button.__mcp_warned) {
+          button.__mcp_warned = true;
+          logDebug(`[Scan] Button "${btnText}" found, but failed to find parent prompt box (Radix/Dialog container)`);
+        }
         continue;
       }
 
